@@ -1,0 +1,64 @@
+h1, h2, h3{
+	text-align: center;
+}
+footer div {
+	text-align: center;
+}
+.container_main{
+	min-height: 400px;
+  	padding-top: 70px;
+  	padding-bottom: 20px;
+}
+.h60{
+	height: 60px;
+}
+.head-input{
+	background: #ccc;
+	margin-top: -15px;
+	padding: 15px;
+}
+.head-input{
+	text-align: center;
+}
+.head-input i{
+	font-size: 24px;
+	color: #47a447;
+	padding: 7px;
+}
+.head-input i:hover{
+	color: #398439;
+	cursor: pointer;
+}
+.hover-table tr:first-child .fa-caret-square-o-up{
+	display: none;
+}
+.hover-table tr:last-child .fa-caret-square-o-down{
+	display: none;
+}
+.hover-table tr:hover{
+	background: #ddd;
+	cursor: pointer;
+}
+.active_project{
+	background: #eee;
+}
+.table-control{
+	font-size: 18px;
+	width: 100px;
+	color: #ccc;
+	text-align: right;
+}
+.table-control i:hover{
+	cursor: pointer;
+	color: #555;
+}
+.blue-heading{
+	background: #5bc0de !important;
+	border: none;
+}
+.error{
+	box-shadow: 0 0 4px 0 red;
+}
+.new-project-error, .new-task-error, .edit-error{
+	color: red;
+}
