@@ -1,5 +1,5 @@
 <?php
-
+	session_start();
 	ini_set('display_errors', 1);
 
 	// определяем в константу путь к файлам

@@ -62,3 +62,13 @@ footer div {
 .new-project-error, .new-task-error, .edit-error{
 	color: red;
 }
+.w150{
+	width: 150px;
+}
+.wfull{
+	width: 100%;
+}
+.error_input{
+	width: 100%;
+	color: red;
+}

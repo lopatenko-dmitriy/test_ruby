@@ -3,18 +3,25 @@ use core\controllers\controller;
 use core\request;
 use models\modelprojects;
 use models\modeltasks;
+use models\modelusers;
 
 class ControllerIndex extends Controller
 {
 
 	public function actionindex()
 	{
+		// если пользователь не авторизован, редирект на страницу входа
+		if(!isset($_SESSION['user']['id']) || !$_SESSION['user']['id']) {
+			header("HTTP/1.1 301 Moved Permanently");
+			header("Location: http://".$_SERVER['HTTP_HOST']."/index/login");
+			exit();
+		}
 		$model_projects = new ModelProjects;
 		$model_tasks = new ModelTasks;
 		$data = array();
 		
 		// получает все проекты
-		$data['projects'] = $model_projects->getAll("`order` DESC");
+		$data['projects'] = $model_projects->getAll("`order` DESC", $_SESSION['user']['id']);
 		
 		// получает актывный проект для вывода его задач
 		$data['active_project'] = (isset($data['projects'][0]))? $data['projects'][0] : 0;
@@ -32,12 +39,94 @@ class ControllerIndex extends Controller
 		else $this->display('index', $data);
 	}
 	
+	// вход пользователей
+	public function actionlogin()
+	{
+		// создает пустые обязательные переменные
+		$data['errors'] = '';
+		$data['login'] = '';
+		$data['password'] = '';
+		
+		// проверяет наличие в post запросе переменных login и password
+		if(isset(Request::$post['login']) && isset(Request::$post['password'])){
+			$model_users = new ModelUsers;
+			$user = $model_users->getOnLogin(Request::$post['login']);
+			// проверяет на наличие логина в системе
+			if(!empty($user) && $user[0]) {
+				if($user[0]['hash'] == md5(Request::$post['password'])){
+					// запись данных пользователя в сессию
+					$_SESSION['user'] = $user[0];
+					// редирект на главную
+					header("HTTP/1.1 301 Moved Permanently");
+					header("Location: http://".$_SERVER['HTTP_HOST']);
+					exit();
+				} else {
+					$data['errors'] = 'Неправильный логин и/или пароль!';
+				}
+			} else {
+				$data['errors'] = 'Такого логина не существует!';
+			}
+		}
+		$this->display('login', $data);
+	}
+	
+	// выход пользователей
+	public function actionlogout()
+	{
+		// удаление данных пользователя из сессии
+		if(isset($_SESSION['user'])) unset($_SESSION['user']);
+		// редирект на вход
+		header("HTTP/1.1 301 Moved Permanently");
+		header("Location: http://".$_SERVER['HTTP_HOST']."/index/login");
+		exit();
+	}
+	
+	// регистрация пользователей
+	public function actionregistration()
+	{
+		// создает пустые обязательные переменные
+		$data['errors']['login'] = '';
+		$data['errors']['password'] = '';
+		$data['login'] = '';
+		$data['password'] = '';
+		$data['errors']['server_error'] = false;
+		
+		// проверяет наличие в post запросе переменных login и password
+		if(isset(Request::$post['login']) && isset(Request::$post['password'])){
+			$model_users = new ModelUsers;
+			// проверяет на уникальнсть логина
+			if(empty($model_users->getOnLogin(Request::$post['login']))) {
+				// загружает переменные в модель и проводит валидацию
+				$errors = $model_users->load(Request::$post['login'], Request::$post['password']);
+				// проверка валидации
+				if(!$errors){
+					// сожранение данных пользователя в БД
+					$result = $model_users->save();
+					if(!$result) $data['errors']['server_error'] = true;
+					else{
+						// редирект на форму входа
+						header("HTTP/1.1 301 Moved Permanently");
+						header("Location: http://".$_SERVER['HTTP_HOST']."/index/login?success=success");
+						exit();
+					} 
+				} else {
+					$data['errors'] = $errors + $data['errors'];
+				}
+				$data['login'] = Request::$post['login'];
+				$data['password'] = Request::$post['password'];
+			} else {
+				$data['errors']['login'] = 'Такой логин уже существует';
+			}
+		}
+		$this->display('registration', $data);
+	}
+	
 	// перемещение проекта
 	public function actionmoveproject()
 	{
 		if(isset(Request::$post['id']) && isset(Request::$post['move'])){
 			$model_projects = new ModelProjects;
-			return $model_projects->orderMove(Request::$post['id'], Request::$post['move']);
+			return $model_projects->orderMove(Request::$post['id'], Request::$post['move'], '', $_SESSION['user']['id']);
 		} else return false;
 	}
 	

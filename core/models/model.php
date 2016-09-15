@@ -36,9 +36,11 @@ abstract class Model
 	}
 	
 	// выбрать все записи
-	public function getAll($order = "'id'")
+	public function getAll($order = "'id'", $user_id = false)
 	{
-		$query = "SELECT * FROM `".DB_PREFIX.$this->table."` ORDER BY ".htmlspecialchars($order);
+		$user = '';
+		if($user_id) $user = " WHERE user_id = '".(int)$user_id."'";
+		$query = "SELECT * FROM `".DB_PREFIX.$this->table."`".$user." ORDER BY ".htmlspecialchars($order);
 		return $this->query($query);
 	}
 	
@@ -64,8 +66,10 @@ abstract class Model
 	}
 	
 	// поднимает по сортировке запись
-	public function orderMove($id, $move, $where = "")
+	public function orderMove($id, $move, $where = "", $user_id = false)
 	{
+		$user = '';
+		if($user_id) $user = " AND user_id = '".(int)$user_id."'";
 		if($move == "up") {
 			$move = '>';
 			$order = "";
@@ -74,11 +78,11 @@ abstract class Model
 			$order = "DESC";
 		}else return false;
 		if(!(int)$id) return false;
-		$query = "SELECT * FROM `".DB_PREFIX.$this->table."` WHERE `id` = '".(int)$id."'";
+		$query = "SELECT * FROM `".DB_PREFIX.$this->table."` WHERE `id` = '".(int)$id."'".$user;
 		$result_up = $this->query($query);
 		if(isset($result_up[0]) && !empty($result_up[0])){
 			
-			$query = "SELECT * FROM `".DB_PREFIX.$this->table."` WHERE `order` ".$move." '".$result_up[0]['order']."' ".$where." ORDER BY `order` ".$order." LIMIT 1";
+			$query = "SELECT * FROM `".DB_PREFIX.$this->table."` WHERE `order` ".$move." '".$result_up[0]['order']."' ".$where.$user." ORDER BY `order` ".$order." LIMIT 1";
 			$result_down = $this->query($query);
 			print_r($query);
 			if(isset($result_down[0]) && !empty($result_down[0])){

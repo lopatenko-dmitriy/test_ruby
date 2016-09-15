@@ -33,6 +33,12 @@
         <div class="navbar-collapse navbar-right">
           <div class="navbar-form navbar-right">
             <a class="navbar-brand" href="<?='http://'.$_SERVER['HTTP_HOST']?>">Главная</a>
+			<?php if(isset($_SESSION['user']['id']) && $_SESSION['user']['id']){ ?>
+				<a class="navbar-brand" href="<?='http://'.$_SERVER['HTTP_HOST']?>/index/logout">Выйти</a>
+			<?php } else { ?>
+				<a class="navbar-brand" href="<?='http://'.$_SERVER['HTTP_HOST']?>/index/login">Войти</a>
+				<a class="navbar-brand" href="<?='http://'.$_SERVER['HTTP_HOST']?>/index/registration">Зарегистрироваться</a>
+			<?php } ?>
           </div>
         </div> 
       </div>
