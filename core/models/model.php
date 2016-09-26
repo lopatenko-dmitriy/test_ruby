@@ -65,6 +65,13 @@ abstract class Model
 		return $this->query($query);
 	}
 	
+	// редактирование сортировки по id
+	public function editOrder($id, $order)
+	{
+		$query = "UPDATE `".DB_PREFIX.$this->table."` SET `order` = '".(int)$order."' WHERE `id` = '".(int)$id."'";
+		return $this->query($query);
+	}
+	
 	// поднимает по сортировке запись
 	public function orderMove($id, $move, $where = "", $user_id = false)
 	{

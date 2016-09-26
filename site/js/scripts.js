@@ -129,3 +129,52 @@ function goEdit()
 		});
 	}
 }
+
+// Drug&Drop задач
+var dragEl = null;
+
+function taskDragStart(e) {  
+	$(e).css('opacity', '0.4');
+	dragEl = e;
+}
+
+function taskDragOver(e) {
+	  if (e.preventDefault) {
+		e.preventDefault();
+	  }
+	  return false;
+}
+
+function taskDragEnter(e) {
+	e.classList.add('over');
+}
+
+function taskDragLeave(e) {
+	e.classList.remove('over');
+}
+
+function taskDrop(e) {
+  if (dragEl != e) {
+		var temp = $(dragEl).html();
+		var id = $(dragEl).attr('data-id');
+		$(dragEl).html($(e).html());
+		$(dragEl).attr('data-id',$(e).attr('data-id'));
+		$(e).html(temp);
+		$(e).attr('data-id',id);
+
+		$('.over').removeClass('over');
+		$('.move').css('opacity', '1');
+	  
+		//  меняет местами задачи в бд
+		var id1 = $(e).attr('data-id');
+		var id2 = $(dragEl).attr('data-id');
+		$.post('/index/changetask', {id1:id1, id2:id2}, function(data){
+		});
+  }
+  return false;
+}
+
+function taskDragEnd(e) {
+	$('.over').removeClass('over');
+}
+

@@ -195,4 +195,18 @@ class ControllerIndex extends Controller
 		}
 		return false;
 	}
+	
+	// меняет местами задачи
+	public function actionchangetask()
+	{
+		if(isset(Request::$post['id1']) && isset(Request::$post['id2'])){
+			$model1 = new ModelTasks;
+			$model2 = new ModelTasks;
+			$temp1 = $model1->get(Request::$post['id1']);
+			$temp2 = $model2->get(Request::$post['id2']);
+			$model1->editOrder(Request::$post['id1'], $temp2['order']);
+			$model2->editOrder(Request::$post['id2'], $temp1['order']);
+		}
+		return;
+	}
 }

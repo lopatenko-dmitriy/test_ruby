@@ -75,7 +75,14 @@
 					  <table class="table hover-table">
 					  <?php if(!empty($data['tasks'])){ 
 								foreach($data['tasks'] as $task) { ?>
-									<tr>
+									<tr id="test" class="move" draggable="true" 
+										ondragstart="return taskDragStart(this)"
+										ondragover="return taskDragOver(this)"
+										ondragenter="return taskDragEnter(this)"
+										ondragleave="return taskDragLeave(this)"
+										ondrop="return taskDrop(this)"
+										data-id="<?=$task['id']?>"
+									>
 										<td><?=$task['id']?></td>
 										<td><?=$task['name']?></td>
 										<td class="table-control">
